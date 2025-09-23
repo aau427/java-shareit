@@ -72,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByContext(String context) {
-        if(context.isEmpty()) {
+        if (context.isEmpty()) {
             return new ArrayList<>();
         }
         return itemStorage.getItemsByContext(context).stream()

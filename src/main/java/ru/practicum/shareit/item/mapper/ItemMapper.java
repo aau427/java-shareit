@@ -10,7 +10,7 @@ public class ItemMapper {
                 .description((itemDto.getDescription()))
                 .available(itemDto.getAvailable())
                 .build();
-        if(itemDto.getId() != null) {
+        if (itemDto.getId() != null) {
             item.setId(itemDto.getId());
         }
         return item;
