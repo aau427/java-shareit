@@ -3,17 +3,16 @@ package ru.practicum.shareit.user.storage;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    private Map<Integer, User> usersMap;
+    private final Map<Integer, User> usersMap;
+    private final Set<String> mailSet;
 
     public InMemoryUserStorage() {
-        this.usersMap = new HashMap<>(100);
+        this.usersMap = new HashMap<>();
+        this.mailSet = new HashSet<>();
     }
 
     @Override
@@ -28,19 +27,31 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User createUser(User user) {
-        user.setId(usersMap.size() + 1);
         usersMap.put(user.getId(), user);
+        mailSet.add(user.getEmail());
         return user;
     }
 
     @Override
     public User updateUser(User user) {
+        String oldMail = usersMap.get(user.getId()).getEmail();
         usersMap.put(user.getId(), user);
+        if (!oldMail.equals(user.getEmail())) {
+            mailSet.remove(oldMail);
+            mailSet.add(user.getEmail());
+        }
         return user;
     }
 
     @Override
+    public boolean isMailExists(String eMail) {
+        return mailSet.contains(eMail);
+    }
+
+    @Override
     public void deleteUser(int userId) {
+        String userMail = usersMap.get(userId).getEmail();
         usersMap.remove(userId);
+        mailSet.remove(userMail);
     }
 }

@@ -3,13 +3,13 @@ package ru.practicum.shareit.user.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+@EqualsAndHashCode(of = {"id"})
 @Setter
 @Getter
-@Builder
 public class UserDto {
     private Integer id;
     @NotBlank(message = "Не указано имя пользователя")

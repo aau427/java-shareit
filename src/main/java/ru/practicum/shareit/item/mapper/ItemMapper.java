@@ -2,9 +2,16 @@ package ru.practicum.shareit.item.mapper;
 
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.service.UserService;
 
 public class ItemMapper {
-    public static Item dtoToItem(ItemDto itemDto) {
+    private final UserService userService;
+
+    public ItemMapper(UserService userService) {
+        this.userService = userService;
+    }
+
+    public Item dtoToItem(ItemDto itemDto) {
         Item item = Item.builder()
                 .name(itemDto.getName())
                 .description((itemDto.getDescription()))
@@ -13,10 +20,13 @@ public class ItemMapper {
         if (itemDto.getId() != null) {
             item.setId(itemDto.getId());
         }
+        if (itemDto.getOwner() != null) {
+            item.setOwner(userService.getUserById(itemDto.getOwner()));
+        }
         return item;
     }
 
-    public static ItemDto itemToDto(Item item) {
+    public ItemDto itemToDto(Item item) {
         ItemDto itemDto = ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())

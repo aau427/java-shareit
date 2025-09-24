@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.CustomValidationException;
@@ -20,32 +19,38 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
     private final UserService userService;
+    private final ItemMapper itemMapper;
+
+    public ItemServiceImpl(ItemStorage itemStorage, UserService userService) {
+        this.itemStorage = itemStorage;
+        this.userService = userService;
+        this.itemMapper = new ItemMapper(userService);
+    }
 
     @Override
     public ItemDto createItem(ItemDto itemDto) {
         if (itemDto.getId() != null) {
-            String message = String.format("Ошибка при создании вещи: указан Id = %d", itemDto.getId());
+            String message = String.format("Ошибка при создании вещи: указан Id = " + itemDto.getId());
             log.error(message);
             throw new CustomValidationException(message);
         }
-        Item item = ItemMapper.dtoToItem(itemDto);
+        Item item = itemMapper.dtoToItem(itemDto);
         item.setOwner(userService.getUserById(itemDto.getOwner()));
-        return ItemMapper.itemToDto(itemStorage.createItem(item));
+        return itemMapper.itemToDto(itemStorage.createItem(item));
     }
 
     @Override
     public ItemDto updateItem(ItemDto itemDto) {
         Item itemForUpdate = getItemById(itemDto.getId());
-        Item newItem = ItemMapper.dtoToItem(itemDto);
-        newItem.setOwner(userService.getUserById(itemDto.getOwner()));
+        Item newItem = itemMapper.dtoToItem(itemDto);
         //отредактировать вещь может только ее владелец
         checkOwner(newItem.getOwner(), itemForUpdate.getOwner());
-        //отредактировать можно только название, комментарий и доступность...
+        /* Отредактировать можно только название, комментарий и доступность.
+           Причем во вх. DTO в наличии только те поля, которые обновляются */
         if (newItem.getName() != null) {
             itemForUpdate.setName(newItem.getName());
         }
@@ -55,18 +60,18 @@ public class ItemServiceImpl implements ItemService {
         if (newItem.getAvailable() != null) {
             itemForUpdate.setAvailable(newItem.getAvailable());
         }
-        return ItemMapper.itemToDto(itemStorage.updateItem(itemForUpdate));
+        return itemMapper.itemToDto(itemStorage.updateItem(itemForUpdate));
     }
 
     @Override
     public ItemDto getItemDtoById(Integer itemId) {
-        return ItemMapper.itemToDto(getItemById(itemId));
+        return itemMapper.itemToDto(getItemById(itemId));
     }
 
     @Override
     public List<ItemDto> getUsersItems(Integer userId) {
         return itemStorage.getUsersItem(userService.getUserById(userId)).stream()
-                .map(ItemMapper::itemToDto)
+                .map(itemMapper::itemToDto)
                 .collect(Collectors.toList());
     }
 
@@ -76,7 +81,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
         return itemStorage.getItemsByContext(context).stream()
-                .map(ItemMapper::itemToDto)
+                .map(itemMapper::itemToDto)
                 .collect(Collectors.toList());
     }
 

@@ -15,7 +15,7 @@ public class InMemoryItemStorage implements ItemStorage {
     private final Map<Integer, Item> itemMap;
 
     public InMemoryItemStorage() {
-        this.itemMap = new HashMap<>(100);
+        this.itemMap = new HashMap<>();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class InMemoryItemStorage implements ItemStorage {
         String upperContext = context.toUpperCase();
         return itemMap.values().stream()
                 .filter(item -> (item.getName().toUpperCase().contains(upperContext) ||
-                            item.getDescription().toUpperCase().contains(upperContext))
+                        item.getDescription().toUpperCase().contains(upperContext))
                         && item.getAvailable())
                 .collect(Collectors.toList());
     }

@@ -15,4 +15,6 @@ public interface UserStorage {
     void deleteUser(int userId);
 
     User updateUser(User user);
+
+    boolean isMailExists(String eMail);
 }
