@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### удалить checkstyle.xml
+checkstyle.xml
