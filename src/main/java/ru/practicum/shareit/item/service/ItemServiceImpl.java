@@ -1,12 +1,13 @@
 package ru.practicum.shareit.item.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.CustomValidationException;
 import ru.practicum.shareit.exceptions.ResourceNotFoundException;
 import ru.practicum.shareit.exceptions.RightsException;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.mapper.SimpleItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.model.User;
@@ -19,17 +20,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-
     private final ItemStorage itemStorage;
     private final UserService userService;
-    private final ItemMapper itemMapper;
-
-    public ItemServiceImpl(ItemStorage itemStorage, UserService userService) {
-        this.itemStorage = itemStorage;
-        this.userService = userService;
-        this.itemMapper = new ItemMapper(userService);
-    }
+    private final SimpleItemMapperImpl itemMapper;
 
     @Override
     public ItemDto createItem(ItemDto itemDto) {
