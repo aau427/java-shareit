@@ -29,9 +29,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto createItem(ItemDto itemDto) {
         if (itemDto.getId() != null) {
-            String message = String.format("Ошибка при создании вещи: указан Id = " + itemDto.getId());
-            log.error(message);
-            throw new CustomValidationException(message);
+            log.error("Ошибка при создании вещи: указан Id = {}", itemDto.getId());
+            throw new CustomValidationException(String.format("Ошибка при создании вещи: указан Id = %d", itemDto.getId()));
         }
         Item item = itemMapper.dtoToItem(itemDto);
         item.setOwner(userService.getUserById(itemDto.getOwner()));
@@ -84,9 +83,8 @@ public class ItemServiceImpl implements ItemService {
     public Item getItemById(int itemId) {
         Optional<Item> itemOptional = itemStorage.getItemById(itemId);
         if (itemOptional.isEmpty()) {
-            String msg = "Не нашел вещь с Id = " + itemId;
-            log.error(msg);
-            throw new ResourceNotFoundException(msg);
+            log.error("Не нашел вещь с Id = {}", itemId);
+            throw new ResourceNotFoundException(String.format("Не нашел вещь с Id = %d", itemId));
         }
         return itemOptional.get().clone();
     }

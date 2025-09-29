@@ -24,9 +24,8 @@ public class UserServiceImpl implements UserService {
     public User getUserById(int userId) {
         Optional<User> userOptional = userStorage.getUserById(userId);
         if (userOptional.isEmpty()) {
-            String msg = "Не нашел пользователя с Id = " + userId;
-            log.error(msg);
-            throw new ResourceNotFoundException(msg);
+            log.error("Не нашел пользователя с Id = {}", userId);
+            throw new ResourceNotFoundException(String.format("Не нашел пользователя с Id = %d", userId));
         }
         return userOptional.get();
     }
@@ -46,9 +45,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto userDto) {
         if (userDto.getId() != null) {
-            String message = String.format("Ошибка при создании пользователя: указан Id = " + userDto.getId());
-            log.error(message);
-            throw new CustomValidationException(message);
+            log.error("Ошибка при создании пользователя: указан Id = {}", userDto.getId());
+            throw new CustomValidationException(String.format("Ошибка при создании пользователя: указан Id = %d", userDto.getId()));
         }
         User user = userMapper.dtoToUser(userDto);
         user.setId(userStorage.getUserList().size() + 1);
@@ -81,9 +79,8 @@ public class UserServiceImpl implements UserService {
 
     private void validateMail(final String eMail) {
         if (userStorage.isMailExists(eMail)) {
-            String message = String.format("Два и более пользователя не могут иметь один и тот же адрес электронной почты: " + eMail);
-            log.error(message);
-            throw new CustomValidationException(message);
+            log.error("Два и более пользователя не могут иметь один и тот же адрес электронной почты: {}", eMail);
+            throw new CustomValidationException(String.format("Два и более пользователя не могут иметь один и тот же адрес электронной почты: %s", eMail));
         }
     }
 }
