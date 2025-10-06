@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.dto.OutputBookingDto;
@@ -11,7 +12,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.mapper.SimpleUserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class SimpleBookingMapper {
     @Autowired
     protected UserService userService;
