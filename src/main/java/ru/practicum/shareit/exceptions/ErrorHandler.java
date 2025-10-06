@@ -1,6 +1,9 @@
 package ru.practicum.shareit.exceptions;
 
 
+import jakarta.validation.ValidationException;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,5 +35,27 @@ public class ErrorHandler {
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     public ErrorResponse handleRightsException(RightsException exception) {
         return new ErrorResponse("ошибка прав доступа", exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public ErrorResponse handleUniqueConstraint(DataIntegrityViolationException exception) {
+        if (exception.getCause().getClass().equals(ConstraintViolationException.class)) {
+            return new ErrorResponse("Нарушена уникальность при при вставке/обновлении", exception.getCause().getCause().getLocalizedMessage());
+        } else {
+            return new ErrorResponse("Ошибка при выполнении запроса", exception.getMessage());
+        }
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleLogicalException(LogicalException exception) {
+        return new ErrorResponse("Ошибка при выполнении запроса", exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationException(ValidationException exception) {
+        return new ErrorResponse("Ошибка при выполнении запроса", exception.getMessage());
     }
 }

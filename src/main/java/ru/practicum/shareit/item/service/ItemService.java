@@ -1,8 +1,10 @@
 package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemOutDtoWithDates;
 import ru.practicum.shareit.item.model.Item;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ItemService {
@@ -12,9 +14,11 @@ public interface ItemService {
 
     Item getItemById(int itemId);
 
-    ItemDto getItemDtoById(Integer itemId);
+    ItemOutDtoWithDates getItemDtoById(Integer itemId, Integer userId);
 
-    List<ItemDto> getUsersItems(Integer userId);
+    List<ItemOutDtoWithDates> getUsersItems(Integer userId);
 
     List<ItemDto> getItemsByContext(String context);
+
+    List<Item> getItemsWasCompleteBookingByUser(Integer itemId, Integer userId, LocalDateTime created);
 }
