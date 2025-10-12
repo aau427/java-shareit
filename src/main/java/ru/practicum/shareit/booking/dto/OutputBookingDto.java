@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 public class OutputBookingDto {
-    Integer id;
-    LocalDateTime start;
-    LocalDateTime end;
-    BookingStatus status;
-    ItemDto item;
-    UserDto booker;
+    private Integer id;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private BookingStatus status;
+    private ItemDto item;
+    private UserDto booker;
 }

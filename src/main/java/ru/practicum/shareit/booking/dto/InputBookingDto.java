@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @Setter
 public class InputBookingDto {
     @NotNull(message = "Не указана дата начала бронирования")
-    LocalDateTime start;
+    private LocalDateTime start;
     @NotNull(message = "Не указана дата окончания бронирования")
-    LocalDateTime end;
+    private LocalDateTime end;
     @NotNull(message = "Не указано, что бронируется")
-    Integer itemId;
-    Integer bookerId;
+    private Integer itemId;
+    private Integer bookerId;
 }

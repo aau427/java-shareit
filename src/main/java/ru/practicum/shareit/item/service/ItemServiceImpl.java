@@ -23,7 +23,6 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -83,23 +82,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemOutDtoWithDates> getUsersItems(Integer userId) {
-        List<ItemOutDtoWithDates> outList = new ArrayList<>();
         List<Item> itemList = itemStorage.findAllByOwner(userService.getUserById(userId));
         Map<Integer, List<Booking>> bookingMap = getBookingMap(itemList);
         Map<Integer, List<Comment>> commentMap = getCommentsMap(itemList);
-        for (Item item : itemList) {
-            List<Comment> commentList = commentMap.get(item.getId());
-            if (commentList == null) {
-                commentList = new ArrayList<>();
-            }
-            List<Booking> bookingList = bookingMap.get(item.getId());
-            if (bookingList == null) {
-                bookingList = new ArrayList<>();
-            }
-            LastAndNextBookings twoBookings = getLastAndNextBookings(bookingList);
-            outList.add(itemMapper.toItemOutDtoWithDate(item, twoBookings, commentList));
-        }
-        return outList;
+        return itemList.stream()
+                .map(item -> {
+                    List<Comment> commentList = commentMap.get(item.getId());
+                    if (commentList == null) {
+                        commentList = new ArrayList<>();
+                    }
+                    List<Booking> bookingList = bookingMap.get(item.getId());
+                    if (bookingList == null) {
+                        bookingList = new ArrayList<>();
+                    }
+                    LastAndNextBookings twoBookings = getLastAndNextBookings(bookingList);
+                    return itemMapper.toItemOutDtoWithDate(item, twoBookings, commentList);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -158,37 +157,14 @@ public class ItemServiceImpl implements ItemService {
 
     private Map<Integer, List<Booking>> getBookingMap(List<Item> itemList) {
         List<Booking> bookingList = bookingStorage.findAllByItemInAndStatusOrderByStart(itemList, BookingStatus.APPROVED);
-        Map<Integer, List<Booking>> outMap = new HashMap<>();
-        List<Booking> currList;
-        Integer currItemId;
-        for (Booking booking : bookingList) {
-            currItemId = booking.getItem().getId();
-            if (outMap.containsKey(currItemId)) {
-                currList = outMap.get(currItemId);
-            } else {
-                currList = new ArrayList<>();
-            }
-            currList.add(booking);
-            outMap.put(currItemId, currList);
-        }
-        return outMap;
+
+        return bookingList.stream()
+                .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
     }
 
     private Map<Integer, List<Comment>> getCommentsMap(List<Item> itemList) {
         List<Comment> commentList = commentStorage.findAllByItemInOrderByCreatedDesc(itemList);
-        Map<Integer, List<Comment>> outMap = new HashMap<>();
-        List<Comment> currList;
-        Integer currItemId;
-        for (Comment comment : commentList) {
-            currItemId = comment.getItem().getId();
-            if (outMap.containsKey(currItemId)) {
-                currList = outMap.get(currItemId);
-            } else {
-                currList = new ArrayList<>();
-            }
-            currList.add(comment);
-            outMap.put(currItemId, currList);
-        }
-        return outMap;
+        return commentList.stream()
+                .collect(Collectors.groupingBy(comment -> comment.getItem().getId()));
     }
 }

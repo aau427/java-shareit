@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.practicum.shareit.booking.mapper.ShortBookingMapper;
+import ru.practicum.shareit.booking.mapper.SimpleBookingMapper;
 import ru.practicum.shareit.booking.model.LastAndNextBookings;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.mapper.SimpleCommentMapper;
@@ -20,7 +20,7 @@ public abstract class SimpleItemMapper {
     @Autowired
     protected UserService userService;
     @Autowired
-    protected ShortBookingMapper bookingMapper;
+    protected SimpleBookingMapper bookingMapper;
     @Autowired
     protected SimpleCommentMapper commentMapper;
 

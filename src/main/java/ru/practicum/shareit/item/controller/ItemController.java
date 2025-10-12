@@ -5,13 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.service.CommentService;
-import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOutDtoWithDates;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static ru.practicum.shareit.common.Common.USER_HEADER;
 
 @RestController
 @RequestMapping("/items")
@@ -22,7 +23,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@RequestBody @Valid ItemDto itemDto,
-                              @RequestHeader(value = Common.USER_HEADER) Integer userId) {
+                              @RequestHeader(value = USER_HEADER) Integer userId) {
         itemDto.setOwner(userId);
         return itemService.createItem(itemDto);
     }
@@ -30,20 +31,20 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestBody ItemDto itemDto,
                               @PathVariable Integer itemId,
-                              @RequestHeader(value = Common.USER_HEADER) Integer userId) {
+                              @RequestHeader(value = USER_HEADER) Integer userId) {
         itemDto.setOwner(userId);
         itemDto.setId(itemId);
         return itemService.updateItem(itemDto);
     }
 
     @GetMapping("/{itemId}")
-    public ItemOutDtoWithDates getItemById(@RequestHeader(value = Common.USER_HEADER) Integer userId,
+    public ItemOutDtoWithDates getItemById(@RequestHeader(value = USER_HEADER) Integer userId,
                                            @PathVariable Integer itemId) {
         return itemService.getItemDtoById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemOutDtoWithDates> getUsersItems(@RequestHeader(value = Common.USER_HEADER) Integer userId) {
+    public List<ItemOutDtoWithDates> getUsersItems(@RequestHeader(value = USER_HEADER) Integer userId) {
         return itemService.getUsersItems(userId);
     }
 
@@ -55,7 +56,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@RequestBody @Valid CommentDto commentDto,
                                  @PathVariable Integer itemId,
-                                 @RequestHeader(value = "X-Sharer-User-Id") Integer authorId) {
+                                 @RequestHeader(value = USER_HEADER) Integer authorId) {
         commentDto.setItemId(itemId);
         commentDto.setAuthorId(authorId);
         commentDto.setCreated(LocalDateTime.now());

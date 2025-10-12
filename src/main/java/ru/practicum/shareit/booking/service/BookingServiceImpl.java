@@ -15,6 +15,8 @@ import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.exceptions.LogicalException;
 import ru.practicum.shareit.exceptions.ResourceNotFoundException;
 import ru.practicum.shareit.exceptions.RightsException;
+import ru.practicum.shareit.item.mapper.SimpleItemMapper;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -31,14 +33,16 @@ public class BookingServiceImpl implements BookingService {
     private final BookingStorage bookingStorage;
     private final SimpleBookingMapper bookingMapper;
     private final UserService userService;
+    private final ItemService itemService;
+    private final SimpleItemMapper itemMapper;
 
     @Transactional
     @Override
     public OutputBookingDto createBooking(InputBookingDto bookingDto) {
-        Booking booking = bookingMapper.dtoToBooking(bookingDto);
+        Booking booking = bookingMapper.dtoToBooking(bookingDto, itemService);
         booking.setStatus(Common.DEFAULT_BOOKING_STATUS);
         checkBookingBeforeCreate(booking);
-        return bookingMapper.bookingToDto(bookingStorage.save(booking));
+        return bookingMapper.bookingToDto(bookingStorage.save(booking), itemMapper);
     }
 
     @Transactional
@@ -51,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             booking.setStatus(BookingStatus.REJECTED);
         }
-        return bookingMapper.bookingToDto(bookingStorage.save(booking));
+        return bookingMapper.bookingToDto(bookingStorage.save(booking), itemMapper);
     }
 
     private void checkBookingBeforeCreate(Booking booking) {
@@ -59,9 +63,7 @@ public class BookingServiceImpl implements BookingService {
             throw new LogicalException("Дата начала позже даты окончания");
         } else if (booking.getStart().equals(booking.getEnd())) {
             throw new LogicalException("Начало бронирования не может быть равно его окончанию!");
-        } /*else if (booking.getStart().isBefore(LocalDateTime.now())) {
-            throw new LogicalException("Дата начала не может быть в прошлом");
-        }*/
+        }
         if (Objects.equals(booking.getBooker().getId(), booking.getItem().getOwner().getId())) {
             throw new LogicalException("Владелец не может сам у себя забронировать. Это глупо");
         }
@@ -74,7 +76,7 @@ public class BookingServiceImpl implements BookingService {
     public OutputBookingDto getBookingById(Integer bookingId, Integer userId) {
         Booking booking = getBookingById(bookingId);
         checkRightsForGet(booking, userId);
-        return bookingMapper.bookingToDto(booking);
+        return bookingMapper.bookingToDto(booking, itemMapper);
     }
 
     @Override
@@ -95,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
             }
         };
         return bookList.stream()
-                .map(bookingMapper::bookingToDto)
+                .map(booking -> bookingMapper.bookingToDto(booking, itemMapper))
                 .collect(Collectors.toList());
     }
 
@@ -119,7 +121,8 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationException(String.format("Недопустимый State = %s в запросе на получение бронирований всех вещей пользователя", state));
             }
         };
-        return bookList.stream().map(bookingMapper::bookingToDto).collect(Collectors.toList());
+        return bookList.stream().map(booking -> bookingMapper.bookingToDto(booking, itemMapper))
+                .collect(Collectors.toList());
     }
 
     private Booking getBookingById(Integer bookingId) {

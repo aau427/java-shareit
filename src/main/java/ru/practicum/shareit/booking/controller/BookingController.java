@@ -9,6 +9,8 @@ import ru.practicum.shareit.booking.service.BookingService;
 
 import java.util.List;
 
+import static ru.practicum.shareit.common.Common.USER_HEADER;
+
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -17,31 +19,31 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping()
-    public OutputBookingDto createBooking(@Valid @RequestBody InputBookingDto bookingDto, @RequestHeader(value = "X-Sharer-User-Id") Integer bookerId) {
+    public OutputBookingDto createBooking(@Valid @RequestBody InputBookingDto bookingDto, @RequestHeader(value = USER_HEADER) Integer bookerId) {
         bookingDto.setBookerId(bookerId);
         return bookingService.createBooking(bookingDto);
     }
 
     @PatchMapping("/{bookingId}")
-    public OutputBookingDto approveBooking(@RequestHeader(value = "X-Sharer-User-Id") Integer userId,
+    public OutputBookingDto approveBooking(@RequestHeader(value = USER_HEADER) Integer userId,
                                            @PathVariable("bookingId") Integer bookingId, @RequestParam(name = "approved") Boolean isApprove) {
         return bookingService.updateBooking(userId, bookingId, isApprove);
     }
 
     @GetMapping("/{bookingId}")
-    public OutputBookingDto getBooking(@RequestHeader(value = "X-Sharer-User-Id") Integer userId,
+    public OutputBookingDto getBooking(@RequestHeader(value = USER_HEADER) Integer userId,
                                        @PathVariable("bookingId") Integer bookingId) {
         return bookingService.getBookingById(bookingId, userId);
     }
 
     @GetMapping
-    public List<OutputBookingDto> getUsersBookings(@RequestHeader(value = "X-Sharer-User-Id") Integer userId,
+    public List<OutputBookingDto> getUsersBookings(@RequestHeader(value = USER_HEADER) Integer userId,
                                                    @RequestParam(name = "state", defaultValue = "ALL") String state) {
         return bookingService.getUsersBooking(userId, state);
     }
 
     @GetMapping("/owner")
-    public List<OutputBookingDto> getOwnersBookings(@RequestHeader(value = "X-Sharer-User-Id") Integer userId,
+    public List<OutputBookingDto> getOwnersBookings(@RequestHeader(value = USER_HEADER) Integer userId,
                                                     @RequestParam(name = "state", defaultValue = "ALL") String state) {
         return bookingService.getOwnersBookings(userId, state);
     }

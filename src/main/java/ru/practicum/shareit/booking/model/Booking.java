@@ -21,20 +21,19 @@ public class Booking {
     private Integer id;
 
     @Column(name = "START_DATE", nullable = false)
-    LocalDateTime start;
+    private LocalDateTime start;
 
     @Column(name = "END_DATE", nullable = false)
-    LocalDateTime end;
+    private LocalDateTime end;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ITEM_ID", nullable = false)
-    Item item;
+    private Item item;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BOOKER_ID", nullable = false)
-    User booker;
+    private User booker;
 
     @Enumerated(EnumType.STRING)
-    BookingStatus status;
-
+    private BookingStatus status;
 }

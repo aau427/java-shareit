@@ -6,9 +6,9 @@ import ru.practicum.shareit.user.dto.UserDto;
 import java.time.LocalDateTime;
 
 public class ShortOutBookingDto {
-    Integer id;
-    LocalDateTime start;
-    LocalDateTime end;
-    BookingStatus status;
-    UserDto booker;
+    private Integer id;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private BookingStatus status;
+    private UserDto booker;
 }

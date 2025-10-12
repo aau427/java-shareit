@@ -14,5 +14,5 @@ public class ItemOutDtoWithDates {
     private Boolean available;
     private ShortOutBookingDto lastBooking;
     private ShortOutBookingDto nextBooking;
-    List<CommentDto> comments;
+    private List<CommentDto> comments;
 }
