@@ -10,6 +10,9 @@ import ru.practicum.shareit.booking.dto.OutputBookingDto;
 import ru.practicum.shareit.booking.mapper.SimpleBookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.service.strategy.BookingFindStrategy;
+import ru.practicum.shareit.booking.service.strategy.ownersbooking.*;
+import ru.practicum.shareit.booking.service.strategy.usersbooking.*;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.exceptions.LogicalException;
@@ -20,7 +23,6 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -81,22 +83,23 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<OutputBookingDto> getUsersBooking(Integer userId, String state) {
-        User user = userService.getUserById(userId);
-        List<Booking> bookList = switch (state) {
-            case "ALL" -> bookingStorage.findBookingByBooker(user);
-            case "WAITING", "REJECTED" -> bookingStorage.findBookingByBookerAndStatus(user, state);
-            case "CURRENT" -> {
-                LocalDateTime dateTime = LocalDateTime.now();
-                yield bookingStorage.findBookingByBookerAndStartBeforeAndEndAfter(user, dateTime, dateTime);
-            }
-            case "PAST" -> bookingStorage.findBookingByBookerAndEndBefore(user, LocalDateTime.now());
-            case "FUTURE" -> bookingStorage.findBookingByBookerAndStartAfter(user, LocalDateTime.now());
+        BookingFindStrategy strategy = switch (state) {
+            case "ALL" -> new AllUsersBookings();
+            case "WAITING" -> new WaitingUsersBookings();
+            case "REJECTED" -> new RejectedUsersBookings();
+            case "CURRENT" -> new CurrentUsersBookings();
+            case "PAST" -> new PastUsersBookings();
+            case "FUTURE" -> new FutureUsersBookings();
             default -> {
                 log.info("Недопустимый State = {} в запросе на получение бронирований пользователя", state);
                 throw new ValidationException(String.format("Недопустимый State = %s в запросе на получение бронирований пользователя", state));
             }
         };
-        return bookList.stream()
+        strategy.setBookingStorage(bookingStorage);
+        FindBookingsManager findBookings = new FindBookingsManager();
+        findBookings.setStrategy(strategy);
+        return findBookings.findBookings(userService.getUserById(userId))
+                .stream()
                 .map(booking -> bookingMapper.bookingToDto(booking, itemMapper))
                 .collect(Collectors.toList());
     }
@@ -104,24 +107,24 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<OutputBookingDto> getOwnersBookings(Integer userId, String state) {
         User user = userService.getUserById(userId);
-        List<Booking> bookList = switch (state) {
-            case "ALL" -> bookingStorage.getAllBookingsForOwner(userId);
-            case "WAITING", "REJECTED" -> bookingStorage.getBookingsForOwnerByStatus(userId, state);
-            case "CURRENT" -> {
-                LocalDateTime dateTime = LocalDateTime.now();
-                yield bookingStorage.getCurrentBookingForOwner(userId, dateTime, dateTime);
-            }
-            case "PAST" -> bookingStorage.getPastBookingForOwner(userId, LocalDateTime.now());
-            case "FUTURE" -> {
-                LocalDateTime dateTime2 = LocalDateTime.now();
-                yield bookingStorage.getFutureBookingForOwner(userId, dateTime2);
-            }
+        BookingFindStrategy strategy = switch (state) {
+            case "ALL" -> new AllOwnersBookings();
+            case "WAITING" -> new WaitingOwnersBookings();
+            case "REJECTED" -> new RejectedOwnersBookings();
+            case "PAST" -> new PastOwnersBookings();
+            case "FUTURE" -> new FutureOwnersBookings();
+
             default -> {
                 log.info("Недопустимый State = {} в запросе на получение бронирований всех вещей пользователя", state);
                 throw new ValidationException(String.format("Недопустимый State = %s в запросе на получение бронирований всех вещей пользователя", state));
             }
         };
-        return bookList.stream().map(booking -> bookingMapper.bookingToDto(booking, itemMapper))
+        strategy.setBookingStorage(bookingStorage);
+        FindBookingsManager findBookings = new FindBookingsManager();
+        findBookings.setStrategy(strategy);
+
+        return findBookings.findBookings(user)
+                .stream().map(booking -> bookingMapper.bookingToDto(booking, itemMapper))
                 .collect(Collectors.toList());
     }
 
