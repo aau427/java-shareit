@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.service;
 
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,10 +9,11 @@ import ru.practicum.shareit.booking.dto.OutputBookingDto;
 import ru.practicum.shareit.booking.mapper.SimpleBookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.booking.service.strategy.BookingFindStrategy;
-import ru.practicum.shareit.booking.service.strategy.ownersbooking.*;
-import ru.practicum.shareit.booking.service.strategy.usersbooking.*;
 import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.booking.strategy.BookingFindStrategy;
+import ru.practicum.shareit.booking.strategy.BookingStrategyFactory;
+import ru.practicum.shareit.booking.strategy.FindBookingStateEnum;
+import ru.practicum.shareit.booking.strategy.FindBookingsManager;
 import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.exceptions.LogicalException;
 import ru.practicum.shareit.exceptions.ResourceNotFoundException;
@@ -37,6 +37,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserService userService;
     private final ItemService itemService;
     private final SimpleItemMapper itemMapper;
+    private final BookingStrategyFactory strategyFactory;
 
     @Transactional
     @Override
@@ -83,18 +84,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<OutputBookingDto> getUsersBooking(Integer userId, String state) {
-        BookingFindStrategy strategy = switch (state) {
-            case "ALL" -> new AllUsersBookings();
-            case "WAITING" -> new WaitingUsersBookings();
-            case "REJECTED" -> new RejectedUsersBookings();
-            case "CURRENT" -> new CurrentUsersBookings();
-            case "PAST" -> new PastUsersBookings();
-            case "FUTURE" -> new FutureUsersBookings();
-            default -> {
-                log.info("Недопустимый State = {} в запросе на получение бронирований пользователя", state);
-                throw new ValidationException(String.format("Недопустимый State = %s в запросе на получение бронирований пользователя", state));
-            }
-        };
+        String newSate = state + "_USERS";
+        BookingFindStrategy strategy = strategyFactory.getStrategyByState(FindBookingStateEnum.parse(newSate));
         strategy.setBookingStorage(bookingStorage);
         FindBookingsManager findBookings = new FindBookingsManager();
         findBookings.setStrategy(strategy);
@@ -107,18 +98,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<OutputBookingDto> getOwnersBookings(Integer userId, String state) {
         User user = userService.getUserById(userId);
-        BookingFindStrategy strategy = switch (state) {
-            case "ALL" -> new AllOwnersBookings();
-            case "WAITING" -> new WaitingOwnersBookings();
-            case "REJECTED" -> new RejectedOwnersBookings();
-            case "PAST" -> new PastOwnersBookings();
-            case "FUTURE" -> new FutureOwnersBookings();
-
-            default -> {
-                log.info("Недопустимый State = {} в запросе на получение бронирований всех вещей пользователя", state);
-                throw new ValidationException(String.format("Недопустимый State = %s в запросе на получение бронирований всех вещей пользователя", state));
-            }
-        };
+        String newSate = state + "_OWNERS";
+        BookingFindStrategy strategy = strategyFactory.getStrategyByState(FindBookingStateEnum.parse(newSate));
         strategy.setBookingStorage(bookingStorage);
         FindBookingsManager findBookings = new FindBookingsManager();
         findBookings.setStrategy(strategy);

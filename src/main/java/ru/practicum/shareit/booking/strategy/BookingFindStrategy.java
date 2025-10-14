@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.service.strategy;
+package ru.practicum.shareit.booking.strategy;
 
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
@@ -12,6 +12,8 @@ public abstract class BookingFindStrategy {
     public final void setBookingStorage(BookingStorage bookingStorage) {
         this.bookingStorage = bookingStorage;
     }
+
+    public abstract FindBookingStateEnum getState();
 
     public abstract List<Booking> findBooking(User user);
 }
