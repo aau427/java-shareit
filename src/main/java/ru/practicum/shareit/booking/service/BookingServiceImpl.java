@@ -86,7 +86,6 @@ public class BookingServiceImpl implements BookingService {
     public List<OutputBookingDto> getUsersBooking(Integer userId, String state) {
         String newSate = state + "_USERS";
         BookingFindStrategy strategy = strategyFactory.getStrategyByState(FindBookingStateEnum.parse(newSate));
-        strategy.setBookingStorage(bookingStorage);
         FindBookingsManager findBookings = new FindBookingsManager();
         findBookings.setStrategy(strategy);
         return findBookings.findBookings(userService.getUserById(userId))
@@ -102,7 +101,6 @@ public class BookingServiceImpl implements BookingService {
         BookingFindStrategy strategy = strategyFactory.getStrategyByState(FindBookingStateEnum.parse(newSate));
         strategy.setBookingStorage(bookingStorage);
         FindBookingsManager findBookings = new FindBookingsManager();
-        findBookings.setStrategy(strategy);
 
         return findBookings.findBookings(user)
                 .stream().map(booking -> bookingMapper.bookingToDto(booking, itemMapper))
