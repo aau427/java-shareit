@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.dto.ItemOutDtoWithDates;
 import ru.practicum.shareit.item.mapper.SimpleItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -37,6 +38,7 @@ public class ItemServiceImpl implements ItemService {
     private final SimpleItemMapper itemMapper;
     private final BookingStorage bookingStorage;
     private final CommentStorage commentStorage;
+    private final ItemRequestService itemRequestService;
 
     @Transactional
     @Override
@@ -45,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
             log.error("Ошибка при создании вещи: указан Id = {}", itemDto.getId());
             throw new CustomValidationException(String.format("Ошибка при создании вещи: указан Id = %d", itemDto.getId()));
         }
-        Item item = itemMapper.dtoToItem(itemDto);
+        Item item = itemMapper.dtoToItem(itemDto, itemRequestService);
         item.setOwner(userService.getUserById(itemDto.getOwner()));
         return itemMapper.itemToDto(itemStorage.save(item));
     }
@@ -54,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(ItemDto itemDto) {
         Item itemForUpdate = getItemById(itemDto.getId());
-        Item newItem = itemMapper.dtoToItem(itemDto);
+        Item newItem = itemMapper.dtoToItem(itemDto, itemRequestService);
         //отредактировать вещь может только ее владелец
         checkOwner(newItem.getOwner(), itemForUpdate.getOwner());
         /* Отредактировать можно только название, комментарий и доступность.

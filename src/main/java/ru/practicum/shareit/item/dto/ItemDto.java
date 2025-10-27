@@ -24,5 +24,5 @@ public class ItemDto {
     @Setter
     private Integer owner;
     @Setter
-    private Integer request;
+    private Integer requestId;
 }
