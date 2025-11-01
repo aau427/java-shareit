@@ -84,26 +84,24 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<OutputBookingDto> getUsersBooking(Integer userId, String state) {
-        String newSate = state + "_USERS";
-        BookingFindStrategy strategy = strategyFactory.getStrategyByState(FindBookingStateEnum.parse(newSate));
-        FindBookingsManager findBookings = new FindBookingsManager();
-        findBookings.setStrategy(strategy);
-        return findBookings.findBookings(userService.getUserById(userId))
-                .stream()
-                .map(booking -> bookingMapper.bookingToDto(booking, itemMapper))
-                .collect(Collectors.toList());
+        return commonGetBookings(userId, state + "_USERS");
     }
 
     @Override
     public List<OutputBookingDto> getOwnersBookings(Integer userId, String state) {
+        return commonGetBookings(userId, state + "_OWNERS");
+    }
+
+    private List<OutputBookingDto> commonGetBookings(Integer userId, String newState) {
         User user = userService.getUserById(userId);
-        String newSate = state + "_OWNERS";
-        BookingFindStrategy strategy = strategyFactory.getStrategyByState(FindBookingStateEnum.parse(newSate));
+        BookingFindStrategy strategy = strategyFactory.getStrategyByState(FindBookingStateEnum.parse(newState));
         strategy.setBookingStorage(bookingStorage);
         FindBookingsManager findBookings = new FindBookingsManager();
+        findBookings.setStrategy(strategy);
 
         return findBookings.findBookings(user)
-                .stream().map(booking -> bookingMapper.bookingToDto(booking, itemMapper))
+                .stream()
+                .map(booking -> bookingMapper.bookingToDto(booking, itemMapper))
                 .collect(Collectors.toList());
     }
 

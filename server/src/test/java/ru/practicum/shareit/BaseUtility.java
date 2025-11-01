@@ -1,8 +1,12 @@
 package ru.practicum.shareit;
 
+import ru.practicum.shareit.booking.dto.InputBookingDto;
+import ru.practicum.shareit.booking.dto.OutputBookingDto;
 import ru.practicum.shareit.booking.dto.ShortOutBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOutDtoWithDates;
 import ru.practicum.shareit.item.model.Item;
@@ -63,14 +67,14 @@ public abstract class BaseUtility {
             User lastBooker = lastBooking.getBooker();
             UserDto lastBookerDto = createUserDto(lastBooker.getId(), lastBooker.getName(), lastBooker.getEmail());
 
-            ShortOutBookingDto lastBookingDto = getShortBookingDto(1, item, lastBooking.getStart(), lastBooking.getEnd(),
+            ShortOutBookingDto lastBookingDto = createShortBookingDto(1, item, lastBooking.getStart(), lastBooking.getEnd(),
                     lastBooking.getStatus(), lastBookerDto);
             itemDto.setLastBooking(lastBookingDto);
         }
         if (nextBooking != null) {
             User nextBooker = nextBooking.getBooker();
             UserDto nextBookerDto = createUserDto(nextBooker.getId(), nextBooker.getName(), nextBooker.getEmail());
-            ShortOutBookingDto nextBookingDto = getShortBookingDto(2, item, nextBooking.getStart(), nextBooking.getEnd(),
+            ShortOutBookingDto nextBookingDto = createShortBookingDto(2, item, nextBooking.getStart(), nextBooking.getEnd(),
                     nextBooking.getStatus(), nextBookerDto);
             itemDto.setNextBooking(nextBookingDto);
         }
@@ -78,7 +82,7 @@ public abstract class BaseUtility {
         return itemDto;
     }
 
-    protected ShortOutBookingDto getShortBookingDto(int id, Item item, LocalDateTime start, LocalDateTime end,
+    protected ShortOutBookingDto createShortBookingDto(int id, Item item, LocalDateTime start, LocalDateTime end,
                                                     BookingStatus status, UserDto booker) {
         ShortOutBookingDto bookingDto = new ShortOutBookingDto();
         bookingDto.setId(id);
@@ -89,13 +93,36 @@ public abstract class BaseUtility {
         return bookingDto;
     }
 
-    protected Booking createBooking(int id, User booker, LocalDateTime start, LocalDateTime end, BookingStatus status) {
+    protected InputBookingDto createInputBookingDto(Item item, User booker, LocalDateTime start, LocalDateTime end) {
+        InputBookingDto dto = new InputBookingDto();
+        dto.setItemId(item.getId());
+        dto.setBookerId(booker.getId());
+        dto.setStart(start);
+        dto.setEnd(end);
+        return dto;
+    }
+
+    protected OutputBookingDto createOutputBookingDto(int id, ItemDto itemDto, UserDto bookerDto,
+                                                      LocalDateTime start, LocalDateTime end, BookingStatus status) {
+        OutputBookingDto dto = new OutputBookingDto();
+        dto.setId(id);
+        dto.setItem(itemDto);
+        dto.setBooker(bookerDto);
+        dto.setStart(start);
+        dto.setEnd(end);
+        dto.setStatus(status);
+        return dto;
+    }
+
+    protected Booking createBooking(Integer id, User booker, Item item,
+                                    LocalDateTime start, LocalDateTime end, BookingStatus status) {
         Booking booking = new Booking();
         booking.setId(1);
         booking.setBooker(booker);
         booking.setStart(start);
         booking.setEnd(end);
         booking.setStatus(status);
+        booking.setItem(item);
         return booking;
     }
 
@@ -105,5 +132,26 @@ public abstract class BaseUtility {
         userDto.setName(iUserDto.getName());
         userDto.setEmail(iUserDto.getEmail());
         return userDto;
+    }
+
+    protected CommentDto createCommentDto(int id, String text, User author, Item item, LocalDateTime created) {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(id);
+        commentDto.setText(text);
+        commentDto.setAuthorId(author.getId());
+        commentDto.setAuthorName(author.getName());
+        commentDto.setItemId(item.getId());
+        commentDto.setCreated(created);
+        return commentDto;
+    }
+
+    protected Comment createComment(int id, String text, User author, Item item, LocalDateTime created) {
+        Comment comment = new Comment();
+        comment.setId(id);
+        comment.setText(text);
+        comment.setAuthor(author);
+        comment.setItem(item);
+        comment.setCreated(created);
+        return comment;
     }
 }

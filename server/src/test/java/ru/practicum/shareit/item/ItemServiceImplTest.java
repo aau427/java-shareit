@@ -197,8 +197,8 @@ class ItemServiceImplTest extends BaseUtility {
         LocalDateTime endNextBooking = LocalDateTime.now().plusDays(2);
         User booker1 = createUser(2, "Петр", "petr@mail.ru");
         User booker2 = createUser(3, "Фома", "foma@mail.ru");
-        Booking lastBooking = createBooking(1, booker1, startLastBooking, endLastBooking, BookingStatus.APPROVED);
-        Booking nextBooking = createBooking(2, booker2, startNextBooking, endNextBooking, BookingStatus.APPROVED);
+        Booking lastBooking = createBooking(1, booker1, item, startLastBooking, endLastBooking, BookingStatus.APPROVED);
+        Booking nextBooking = createBooking(2, booker2, item, startNextBooking, endNextBooking, BookingStatus.APPROVED);
         LastAndNextBookings twoBookings = new LastAndNextBookings();
         twoBookings.setLastBooking(lastBooking);
         twoBookings.setNextBooking(nextBooking);
@@ -223,7 +223,7 @@ class ItemServiceImplTest extends BaseUtility {
         LocalDateTime startLastBooking = LocalDateTime.now().minusDays(10);
         LocalDateTime endLastBooking = LocalDateTime.now().minusDays(7);
         User booker1 = createUser(2, "Петр", "petr@mail.ru");
-        Booking lastBooking = createBooking(1, booker1, startLastBooking, endLastBooking, BookingStatus.APPROVED);
+        Booking lastBooking = createBooking(1, booker1, item, startLastBooking, endLastBooking, BookingStatus.APPROVED);
         LastAndNextBookings twoBookings = new LastAndNextBookings();
         twoBookings.setLastBooking(lastBooking);
         ItemOutDtoWithDates expectedDto = createItemDtoWithDates(1, item, lastBooking, null);
@@ -324,4 +324,64 @@ class ItemServiceImplTest extends BaseUtility {
         assertNotNull(result);
         verify(itemStorage, times(1)).getItemsWasCompleteBookingByUser(anyInt(), anyInt(), any(LocalDateTime.class));
     }
+
+    @DisplayName("возвращает вещи пользователя")
+    @Test
+    void shouldReturnItems_GetUsersItems() {
+        item.setId(1);
+        LocalDateTime startLastBooking = LocalDateTime.now().minusDays(10);
+        LocalDateTime endLastBooking = LocalDateTime.now().minusDays(7);
+        LocalDateTime startNextBooking = LocalDateTime.now().plusDays(1);
+        LocalDateTime endNextBooking = LocalDateTime.now().plusDays(2);
+        User booker1 = createUser(2, "Петр", "petr@mail.ru");
+        User booker2 = createUser(3, "Фома", "foma@mail.ru");
+        Booking lastBooking = createBooking(1, booker1, item, startLastBooking, endLastBooking, BookingStatus.APPROVED);
+        Booking nextBooking = createBooking(2, booker2, item, startNextBooking, endNextBooking, BookingStatus.APPROVED);
+        LastAndNextBookings twoBookings = new LastAndNextBookings();
+        twoBookings.setLastBooking(lastBooking);
+        twoBookings.setNextBooking(nextBooking);
+        List<Booking> approvedBookings = List.of(lastBooking, nextBooking);
+        ItemOutDtoWithDates expectedDto = createItemDtoWithDates(1, item, lastBooking, nextBooking);
+        List<Item> itemList = List.of(item);
+
+
+        when(userService.getUserById(owner.getId())).thenReturn(owner);
+        when(itemStorage.findAllByOwner(owner)).thenReturn(itemList);
+        when(bookingStorage.findAllByItemInAndStatusOrderByStart(anyList(), eq(BookingStatus.APPROVED))).thenReturn(approvedBookings);
+        when(commentStorage.findAllByItemInOrderByCreatedDesc(anyList())).thenReturn(Collections.emptyList());
+
+        when(itemMapper.toItemOutDtoWithDate(any(Item.class), any(LastAndNextBookings.class), anyList())).thenReturn(expectedDto);
+
+        List<ItemOutDtoWithDates> result = itemService.getUsersItems(owner.getId());
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(bookingStorage, times(1)).findAllByItemInAndStatusOrderByStart(anyList(), any());
+        verify(commentStorage, times(1)).findAllByItemInOrderByCreatedDesc(anyList());
+    }
+
+    @DisplayName("возвращает вещи пользователя, если бронирований нет")
+    @Test
+    void shouldReturnItemsWhenBookingsNotExist_GetUsersItems() {
+        item.setId(1);
+        List<Booking> approvedBookings = Collections.emptyList();
+        ItemOutDtoWithDates expectedDto = createItemDtoWithDates(1, item, null, null);
+        List<Item> itemList = List.of(item);
+
+
+        when(userService.getUserById(owner.getId())).thenReturn(owner);
+        when(itemStorage.findAllByOwner(owner)).thenReturn(itemList);
+        when(bookingStorage.findAllByItemInAndStatusOrderByStart(anyList(), eq(BookingStatus.APPROVED))).thenReturn(approvedBookings);
+        when(commentStorage.findAllByItemInOrderByCreatedDesc(anyList())).thenReturn(Collections.emptyList());
+
+        when(itemMapper.toItemOutDtoWithDate(any(Item.class), any(LastAndNextBookings.class), anyList())).thenReturn(expectedDto);
+
+        List<ItemOutDtoWithDates> result = itemService.getUsersItems(owner.getId());
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(bookingStorage, times(1)).findAllByItemInAndStatusOrderByStart(anyList(), any());
+        verify(commentStorage, times(1)).findAllByItemInOrderByCreatedDesc(anyList());
+    }
+
 }
