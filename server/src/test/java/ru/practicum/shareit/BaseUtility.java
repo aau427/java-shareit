@@ -9,13 +9,19 @@ import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOutDtoWithDates;
+import ru.practicum.shareit.item.dto.ItemShortOutDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.ItemRequestDtoWithItems;
+import ru.practicum.shareit.request.dto.ItemRequestInDto;
+import ru.practicum.shareit.request.dto.ItemRequestOutDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class BaseUtility {
     protected User createUser(int id, String name, String email) {
@@ -55,6 +61,16 @@ public abstract class BaseUtility {
                 .owner(ownerId)
                 .requestId(requestId)
                 .build();
+    }
+
+    protected ItemShortOutDto createItemShortOutDto(int id, Item item, User requester) {
+        ItemShortOutDto dto = new ItemShortOutDto();
+        dto.setId(id);
+        dto.setName(item.getName());
+        dto.setDescription(item.getDescription());
+        dto.setAvailable(item.getAvailable());
+        dto.setRequestId(requester.getId());
+        return dto;
     }
 
     protected ItemOutDtoWithDates createItemDtoWithDates(int id, Item item, Booking lastBooking, Booking nextBooking) {
@@ -153,5 +169,41 @@ public abstract class BaseUtility {
         comment.setItem(item);
         comment.setCreated(created);
         return comment;
+    }
+
+    protected ItemRequestInDto createItemRequestInDto(User user, String description) {
+        ItemRequestInDto dto = new ItemRequestInDto();
+        dto.setUserId(user.getId());
+        dto.setDescription(description);
+        return dto;
+    }
+
+    protected ItemRequestOutDto createItemRequestOutDto(Integer id, String description, LocalDateTime created) {
+        ItemRequestOutDto dto = new ItemRequestOutDto();
+        dto.setId(id);
+        dto.setDescription(description);
+        dto.setCreated(created);
+        return dto;
+    }
+
+    protected ItemRequest createItemRequest(Integer id, User user, String description, LocalDateTime created) {
+        ItemRequest request = new ItemRequest();
+        request.setId(1);
+        request.setRequester(user);
+        request.setDescription(description);
+        request.setCreated(created);
+        return request;
+    }
+
+    protected ItemRequestDtoWithItems createItemRequestDtoWithItems(ItemRequest request, List<Item> itemList) {
+        List<ItemShortOutDto>  itemsDtoList  = itemList.stream()
+                .map(item -> createItemShortOutDto(item.getId(), item, request.getRequester()))
+                .collect(Collectors.toList());
+        ItemRequestDtoWithItems dto = new ItemRequestDtoWithItems();
+        dto.setId(request.getId());
+        dto.setItems(itemsDtoList);
+        dto.setCreated(request.getCreated());
+        dto.setDescription(request.getDescription());
+        return dto;
     }
 }

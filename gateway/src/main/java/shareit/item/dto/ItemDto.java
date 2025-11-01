@@ -8,9 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
+@Setter
 @Builder
 public class ItemDto {
-    @Setter
     @Getter
     private Integer id;
     @NotBlank(message = "Не указано наименование вещи")
@@ -21,8 +21,6 @@ public class ItemDto {
     private String description;
     @NotNull(message = "Не указана доступна ли вещь")
     private Boolean available;
-    @Setter
     private Integer owner;
-    @Setter
     private Integer requestId;
 }
