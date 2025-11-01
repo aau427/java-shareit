@@ -106,7 +106,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByContext(String context) {
-        if (context.isEmpty()) {
+        if (context.isEmpty() || context.isBlank()) {
             return new ArrayList<>();
         }
         return itemStorage.contextSearch(context).stream()
