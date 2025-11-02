@@ -22,7 +22,8 @@ class ItemRequestInDtoTest {
     @BeforeEach
     void beforeEach() {
         itemRequestDto = new ItemRequestInDto();
-        itemRequestDto.setUserId(1itemRequestDto.setDescription("Хочу самовар");
+        itemRequestDto.setUserId(11);
+        itemRequestDto.setDescription("Хочу самовар");
     }
 
     @DisplayName("Валидация: корректный DTO не должен иметь нарушений")
