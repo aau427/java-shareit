@@ -22,10 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @JsonTest
 public class ItemDtoTest {
 
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     @Autowired
     private JacksonTester<ItemDto> json;
-
-    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     private ItemDto itemDto;
 
     @BeforeEach()

@@ -14,7 +14,6 @@ import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.comment.mapper.SimpleCommentMapperImpl;
 import ru.practicum.shareit.comment.storage.CommentStorage;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemOutDtoWithDates;
 import ru.practicum.shareit.item.mapper.SimpleItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;

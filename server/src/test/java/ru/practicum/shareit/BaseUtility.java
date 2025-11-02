@@ -99,7 +99,7 @@ public abstract class BaseUtility {
     }
 
     protected ShortOutBookingDto createShortBookingDto(int id, Item item, LocalDateTime start, LocalDateTime end,
-                                                    BookingStatus status, UserDto booker) {
+                                                       BookingStatus status, UserDto booker) {
         ShortOutBookingDto bookingDto = new ShortOutBookingDto();
         bookingDto.setId(id);
         bookingDto.setStart(start);
@@ -196,7 +196,7 @@ public abstract class BaseUtility {
     }
 
     protected ItemRequestDtoWithItems createItemRequestDtoWithItems(ItemRequest request, List<Item> itemList) {
-        List<ItemShortOutDto>  itemsDtoList  = itemList.stream()
+        List<ItemShortOutDto> itemsDtoList = itemList.stream()
                 .map(item -> createItemShortOutDto(item.getId(), item, request.getRequester()))
                 .collect(Collectors.toList());
         ItemRequestDtoWithItems dto = new ItemRequestDtoWithItems();

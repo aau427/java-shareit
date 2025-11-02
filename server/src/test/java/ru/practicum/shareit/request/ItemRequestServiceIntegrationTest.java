@@ -41,6 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 })
 public class ItemRequestServiceIntegrationTest {
     @Autowired
+    ItemRequestStorage itemRequestStorage;
+    @Autowired
     private ItemServiceImpl itemService;
     @Autowired
     private UserStorage userStorage;
@@ -56,9 +58,6 @@ public class ItemRequestServiceIntegrationTest {
     private ItemRequestServiceImpl itemRequestService;
     @Autowired
     private SimpleItemRequestMapper itemRequestMapper;
-    @Autowired
-    ItemRequestStorage itemRequestStorage;
-
     private User user;
 
     @BeforeEach
