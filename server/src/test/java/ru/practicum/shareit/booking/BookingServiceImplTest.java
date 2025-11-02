@@ -232,7 +232,7 @@ class BookingServiceImplTest extends BaseUtility {
 
     @DisplayName("Ошибка при получении бронирования: бронирование не найдено")
     @Test
-    void ShouldThrowResourceNotFoundException_getBookingById_() {
+    void shouldThrowResourceNotFoundException_getBookingById_() {
         when(bookingStorage.findById(anyInt())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> bookingService.getBookingById(666, booker.getId()));

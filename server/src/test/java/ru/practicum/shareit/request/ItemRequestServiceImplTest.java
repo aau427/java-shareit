@@ -83,7 +83,7 @@ class ItemRequestServiceImplTest extends BaseUtility {
 
     @DisplayName("Пользователь может получить список своих запросов вместе с ответами на них")
     @Test
-    void ShouldReturnRequestsWithItems_getRequestByUserId() {
+    void shouldReturnRequestsWithItems_getRequestByUserId() {
         List<ItemRequest> requestList = List.of(itemRequest);
         List<Item> itemList = List.of(item);
         ItemRequestDtoWithItems dtoWithItems = createItemRequestDtoWithItems(itemRequest, itemList);
@@ -102,7 +102,7 @@ class ItemRequestServiceImplTest extends BaseUtility {
 
     @DisplayName("Получить запросы других пользователей")
     @Test
-    void ShouldReturnAllRequestsWithItems_getAllRequests() {
+    void shouldReturnAllRequestsWithItems_getAllRequests() {
         List<ItemRequest> requestList = List.of(itemRequest);
         List<Item> itemList = List.of(item);
         ItemRequestDtoWithItems dtoWithItems = createItemRequestDtoWithItems(itemRequest, itemList);

@@ -91,7 +91,7 @@ class CommentServiceImplTest extends BaseUtility {
 
     @DisplayName("Добавление комментария должно выбросить исключение, если пользователь не брал вещь в аренду")
     @Test
-    void ShouldThrowException_WhenUserDidNotBookItem() {
+    void shouldThrowException_WhenUserDidNotBookItem() {
 
         when(commentMapper.dtoToComment(inputCommentDto, itemService, userService))
                 .thenReturn(commentToSave);
