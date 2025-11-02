@@ -277,7 +277,7 @@ class ItemServiceImplTest extends BaseUtility {
     void getItemsByContext() {
         List<Item> foundItems = List.of(item);
         List<ItemDto> expectedDtos = List.of(itemDto);
-        String context = "носок";
+        String context = "НОСОК";
 
         when(itemStorage.contextSearch(context)).thenReturn(foundItems);
         when(itemMapper.itemToDto(item)).thenReturn(itemDto);

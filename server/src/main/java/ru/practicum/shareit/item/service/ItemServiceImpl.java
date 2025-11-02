@@ -109,7 +109,8 @@ public class ItemServiceImpl implements ItemService {
         if (context.isEmpty() || context.isBlank()) {
             return new ArrayList<>();
         }
-        return itemStorage.contextSearch(context).stream()
+
+        return itemStorage.contextSearch(context.toUpperCase()).stream()
                 .map(itemMapper::itemToDto)
                 .collect(Collectors.toList());
     }

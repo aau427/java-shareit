@@ -39,7 +39,7 @@ public abstract class SimpleItemMapper {
     @Mapping(target = "comments", expression = "java(this.getDtoList(commentList))")
     public abstract ItemOutDtoWithDates toItemOutDtoWithDate(Item item, LastAndNextBookings twoBookings, List<Comment> commentList);
 
-    @Mapping(target = "requestId", expression = "java(item.getRequest().getId())")
+    @Mapping(target = "requestId", expression = "java((item.getRequest() == null) ? null : item.getRequest().getId())")
     public abstract ItemShortOutDto toItemShortDto(Item item);
 
     public List<CommentDto> getDtoList(List<Comment> commentList) {
