@@ -21,13 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 public class SimpleItemMapperImlTest {
     @Autowired
-    private SimpleItemMapperImpl itemMapper;
-
-    @Autowired
     UserStorage userStorage;
     @Autowired
     ItemRequestService itemRequestService;
-
+    @Autowired
+    private SimpleItemMapperImpl itemMapper;
     private User owner;
     private Item item;
     private ItemDto itemDto;
