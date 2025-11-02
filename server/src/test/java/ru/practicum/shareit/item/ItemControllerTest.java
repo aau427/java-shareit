@@ -241,7 +241,7 @@ class ItemControllerTest {
         @DisplayName("Ищет вещи по контексту")
         @Test
         @SneakyThrows
-        void ShouldFindItemsByContextSearch() {
+        void shouldFindItemsByContextSearch() {
             mockMvc.perform(get("/items/search")
                             .param("text", "Дрель")
                             .header(Common.USER_HEADER, createdOwnerId))
