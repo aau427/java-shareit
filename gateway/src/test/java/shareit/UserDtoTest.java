@@ -21,10 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @JsonTest
 public class UserDtoTest {
 
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     @Autowired
     private JacksonTester<UserDto> json;
-
-    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     private UserDto userDto;
 
     @BeforeEach

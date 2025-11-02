@@ -26,6 +26,7 @@ class ItemRequestInDtoTest {
                 .description("Хочу самовар")
                 .build();
     }
+
     @DisplayName("Валидация: корректный DTO не должен иметь нарушений")
     @Test
     void validation_WhenValidDto_ShouldHaveNoViolations() {
@@ -38,7 +39,7 @@ class ItemRequestInDtoTest {
     @DisplayName("Валидация: поле description не может быть пустым")
     @Test
     void validation_WhenBlankDescription_ShouldHaveViolation() {
-       itemRequestDto.setDescription("   ");
+        itemRequestDto.setDescription("   ");
 
         Set<ConstraintViolation<ItemRequestInDto>> violations = validator.validate(itemRequestDto);
 

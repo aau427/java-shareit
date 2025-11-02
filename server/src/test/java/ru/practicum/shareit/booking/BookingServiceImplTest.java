@@ -31,7 +31,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -285,7 +284,7 @@ class BookingServiceImplTest extends BaseUtility {
 
         when(userService.getUserById(anyInt())).thenReturn(owner);
 
-        assertThrows(ValidationException.class, () ->  bookingService.getOwnersBookings(owner.getId(), state));
+        assertThrows(ValidationException.class, () -> bookingService.getOwnersBookings(owner.getId(), state));
         verify(bookingFindStrategy, never()).findBooking(owner);
     }
 

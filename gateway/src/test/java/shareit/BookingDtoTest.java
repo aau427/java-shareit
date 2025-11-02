@@ -19,6 +19,7 @@ class BookingDtoTest {
 
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     private BookingDto bookingDto;
+
     @BeforeEach()
     void beforeEach() {
         bookingDto = BookingDto.builder()
