@@ -58,6 +58,39 @@ class UserControllerTest extends BaseControllerHelper {
                 .andExpect(jsonPath("$.email").value(ownerDto.getEmail()));
     }
 
+    @DisplayName("Не создается пользователь с указанным ID")
+    @Test
+    @SneakyThrows
+    void shouldNotCreateUserWithId() {
+        ownerDto.setId(1);
+
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(ownerDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(409))
+                .andExpect(jsonPath("$.error").value("Ошибка валидации"));
+    }
+
+
+    @DisplayName("Не создает 2-х пользователей с одинаковым e-mail")
+    @Test
+    @SneakyThrows
+    void shouldNotCreateUsersWithTheSameEmail() {
+
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(ownerDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(ownerDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("Нарушена уникальность при при вставке/обновлении"))
+                .andExpect(jsonPath("$.description").isString());
+    }
+
     @DisplayName("Пользователь не создается без имени")
     @Test
     @SneakyThrows
