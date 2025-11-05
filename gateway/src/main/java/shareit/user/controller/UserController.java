@@ -35,9 +35,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> deleteUser(@PathVariable Long userId) {
+    public void deleteUser(@PathVariable Long userId) {
         log.info("GateWay: удаляю пользователя № {}", userId);
-        return userClient.deleteUser(userId);
+        userClient.deleteUser(userId);
     }
 
     @PatchMapping("/{userId}")
