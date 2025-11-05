@@ -13,11 +13,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.BaseControllerHelper;
+import ru.practicum.shareit.booking.dto.InputBookingDto;
+import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.comment.storage.CommentStorage;
 import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.storage.UserStorage;
+
+import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -37,6 +43,10 @@ class ItemControllerTest extends BaseControllerHelper {
     private UserStorage userStorage;
     @Autowired
     private ItemStorage itemStorage;
+    @Autowired
+    private BookingStorage bookingStorage;
+    @Autowired
+    private CommentStorage commentStorage;
 
     private int createdOwnerId;
 
@@ -47,19 +57,22 @@ class ItemControllerTest extends BaseControllerHelper {
     @SneakyThrows
     void beforeEach() {
         UserDto ownerDto = createFirstUserDto();
-        MvcResult result = mockMvc.perform(post("/users")
+        String result = mockMvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(ownerDto))
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andReturn();
-        String responseBody = result.getResponse().getContentAsString();
-        createdOwnerId = JsonPath.read(responseBody, "$.id");
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        createdOwnerId = JsonPath.read(result, "$.id");
         itemDto = createFirstInputItemDto(createdOwnerId);
     }
 
     @AfterEach
     @Transactional
     void afterEach() {
+        commentStorage.deleteAll();
+        bookingStorage.deleteAll();
         itemStorage.deleteAll();
         userStorage.deleteAll();
     }
@@ -363,6 +376,61 @@ class ItemControllerTest extends BaseControllerHelper {
                             .param("text", ""))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(0)));
+        }
+
+        @DisplayName("Можно добавить комментарий")
+        @Test
+        @SneakyThrows
+        void shouldAddComment() {
+            UserDto bookerDto = createSecondUserDto();
+            String result = mockMvc.perform(post("/users")
+                            .content(objectMapper.writeValueAsString(bookerDto))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+            int createdBookerId = JsonPath.read(result, "$.id");
+
+            InputBookingDto bookingDto = createInputBooking();
+            bookingDto.setBookerId(createdBookerId);
+
+            result = mockMvc.perform(post("/bookings")
+                            .header(Common.USER_HEADER, createdBookerId)
+                            .content(objectMapper.writeValueAsString(bookingDto))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+            int createdBookingId = JsonPath.read(result, "$.id");
+
+            mockMvc.perform(patch("/bookings/" + createdBookingId)
+                    .header(Common.USER_HEADER, createdOwnerId)
+                    .param("approved", "true"));
+
+            CommentDto commentDto = createCommentDto(createdBookerId, createdItemId);
+            mockMvc.perform(post("/items/" + createdItemId + "/comment")
+                            .header(Common.USER_HEADER, createdBookerId)
+                            .content(objectMapper.writeValueAsString(commentDto))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.text").value("Норм"));
+        }
+
+        private InputBookingDto createInputBooking() {
+            InputBookingDto inputBookingDto = new InputBookingDto();
+            inputBookingDto.setStart(LocalDateTime.now().minusDays(10));
+            inputBookingDto.setEnd(LocalDateTime.now().minusDays(5));
+            inputBookingDto.setItemId(createdItemId);
+            return inputBookingDto;
+        }
+
+        private CommentDto createCommentDto(int authorId, int itemId) {
+            CommentDto dto = new CommentDto();
+            dto.setCreated(LocalDateTime.now());
+            dto.setText("Норм");
+            dto.setAuthorId(authorId);
+            dto.setItemId(itemId);
+            return dto;
         }
     }
 }
