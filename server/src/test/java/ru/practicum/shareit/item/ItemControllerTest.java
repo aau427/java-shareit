@@ -184,8 +184,10 @@ class ItemControllerTest extends BaseControllerHelper {
         @DisplayName("Item обновляется (только имя)")
         @Test
         @SneakyThrows
-        void shouldUpdateItemPartially() {
+        void shouldUpdateOnlyName() {
             itemDto.setName("Новое имя");
+            String oldDescription = itemDto.getDescription();
+            itemDto.setDescription(null);
 
             mockMvc.perform(patch("/items/" + createdItemId)
                             .header(Common.USER_HEADER, createdOwnerId)
@@ -195,9 +197,52 @@ class ItemControllerTest extends BaseControllerHelper {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(createdItemId))
                     .andExpect(jsonPath("$.name").value("Новое имя"))
-                    .andExpect(jsonPath("$.description").value(itemDto.getDescription()))
+                    .andExpect(jsonPath("$.description").value(oldDescription))
                     .andExpect(jsonPath("$.available").value(itemDto.getAvailable()));
         }
+
+        @DisplayName("Item обновляется (только комментарий)")
+        @Test
+        @SneakyThrows
+        void shouldUpdateOnlyDescription() {
+            itemDto.setDescription("Новый комментарий");
+            String oldName = itemDto.getName();
+            itemDto.setName(null);
+
+            mockMvc.perform(patch("/items/" + createdItemId)
+                            .header(Common.USER_HEADER, createdOwnerId)
+                            .content(objectMapper.writeValueAsString(itemDto))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(createdItemId))
+                    .andExpect(jsonPath("$.name").value(oldName))
+                    .andExpect(jsonPath("$.description").value("Новый комментарий"))
+                    .andExpect(jsonPath("$.available").value(itemDto.getAvailable()));
+        }
+
+        @DisplayName("Item обновляется (доступность)")
+        @Test
+        @SneakyThrows
+        void shouldUpdateOnlyAvialabel() {
+            itemDto.setAvailable(false);
+            String oldName = itemDto.getName();
+            String oldDescription = itemDto.getDescription();
+            itemDto.setName(null);
+            itemDto.setDescription(null);
+
+            mockMvc.perform(patch("/items/" + createdItemId)
+                            .header(Common.USER_HEADER, createdOwnerId)
+                            .content(objectMapper.writeValueAsString(itemDto))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(createdItemId))
+                    .andExpect(jsonPath("$.name").value(oldName))
+                    .andExpect(jsonPath("$.description").value(oldDescription))
+                    .andExpect(jsonPath("$.available").value(false));
+        }
+
 
         @DisplayName("Item не обновляется, если не существует")
         @Test
