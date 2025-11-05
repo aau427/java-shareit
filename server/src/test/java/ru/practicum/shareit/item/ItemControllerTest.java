@@ -11,9 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.user.BaseControllerHelper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.storage.UserStorage;
 
@@ -25,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @SpringBootTest
-class ItemControllerTest {
+class ItemControllerTest extends BaseControllerHelper {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +38,6 @@ class ItemControllerTest {
     @Autowired
     private ItemStorage itemStorage;
 
-    private UserDto ownerDto;
     private int createdOwnerId;
 
     private ItemDto itemDto;
@@ -45,7 +46,7 @@ class ItemControllerTest {
     @BeforeEach
     @SneakyThrows
     void beforeEach() {
-        ownerDto = createOwnerDto();
+        UserDto ownerDto = createFirstUserDto();
         MvcResult result = mockMvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(ownerDto))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -53,10 +54,11 @@ class ItemControllerTest {
                 .andReturn();
         String responseBody = result.getResponse().getContentAsString();
         createdOwnerId = JsonPath.read(responseBody, "$.id");
-        itemDto = createInputItemDto();
+        itemDto = createFirstInputItemDto(createdOwnerId);
     }
 
     @AfterEach
+    @Transactional
     void afterEach() {
         itemStorage.deleteAll();
         userStorage.deleteAll();
@@ -106,30 +108,6 @@ class ItemControllerTest {
                 .andExpect(status().is(400));
     }
 
-    private UserDto createOwnerDto() {
-        return createUserDto("Item Owner", "owner@mail.ru");
-    }
-
-    private UserDto createUserDto(String name, String email) {
-        UserDto userDto = new UserDto();
-        userDto.setName(name);
-        userDto.setEmail(email);
-        return userDto;
-    }
-
-    private ItemDto createInputItemDto() {
-        return createItemDto("Дрель", "Дрель на ручном приводе", true, createdOwnerId);
-    }
-
-    private ItemDto createItemDto(String name, String description, boolean isAvialabel, int ownerId) {
-        return ItemDto.builder()
-                .name(name)
-                .description(description)
-                .available(isAvialabel)
-                .owner(ownerId)
-                .build();
-    }
-
     @Nested
     @DisplayName("Обновление, поиск, удаление вещи")
     class CrudItemClassTest {
@@ -148,7 +126,7 @@ class ItemControllerTest {
             String responseBody = result.getResponse().getContentAsString();
             createdItemId = JsonPath.read(responseBody, "$.id");
 
-            anotherItemDto = createItemDto("Сахарница", "Красная сахарница", true, createdOwnerId);
+            anotherItemDto = createSecondItemDto(createdOwnerId);
             result = mockMvc.perform(post("/items")
                             .header(Common.USER_HEADER, createdOwnerId)
                             .content(objectMapper.writeValueAsString(anotherItemDto))
@@ -238,16 +216,17 @@ class ItemControllerTest {
                     .andExpect(jsonPath("$[1].available").value(anotherItemDto.getAvailable()));
         }
 
+
         @DisplayName("Ищет вещи по контексту")
         @Test
         @SneakyThrows
         void shouldFindItemsByContextSearch() {
             mockMvc.perform(get("/items/search")
-                            .param("text", "Дрель")
+                            .param("text", "вещ")
                             .header(Common.USER_HEADER, createdOwnerId))
                     .andExpect(status().is(200))
                     .andExpect(jsonPath("$").isArray())
-                    .andExpect(jsonPath("$", hasSize(1))) // Проверяем, что в списке 1 элемент
+                    .andExpect(jsonPath("$", hasSize(2))) // Проверяем, что в списке 1 элемент
                     .andExpect(jsonPath("$[0].id").value(createdItemId))
                     .andExpect(jsonPath("$[0].name").value(itemDto.getName()))
                     .andExpect(jsonPath("$[0].available").value(itemDto.getAvailable()));

@@ -13,7 +13,7 @@ import java.util.List;
 public interface BookingStorage extends JpaRepository<Booking, Integer> {
     List<Booking> findBookingByBooker(User user);
 
-    List<Booking> findBookingByBookerAndStatus(User user, String state);
+    List<Booking> findBookingByBookerAndStatus(User user, BookingStatus status);
 
     List<Booking> findBookingByBookerAndStartBeforeAndEndAfter(User user, LocalDateTime dateTime,
                                                                LocalDateTime dateTime1);
@@ -23,7 +23,7 @@ public interface BookingStorage extends JpaRepository<Booking, Integer> {
     List<Booking> findBookingByBookerAndStartAfter(User user, LocalDateTime dateTime);
 
     @Query(value = "SELECT B FROM Booking B WHERE B.item.owner.id = ?1 AND B.status = ?2 order by B.start desc")
-    List<Booking> getBookingsForOwnerByStatus(Integer ownerId, String status);
+    List<Booking> getBookingsForOwnerByStatus(Integer ownerId, BookingStatus bookingStatus);
 
     @Query(value = "SELECT B FROM Booking B WHERE B.item.owner.id = ?1 ORDER BY B.start DESC")
     List<Booking> getAllBookingsForOwner(Integer ownerId);
