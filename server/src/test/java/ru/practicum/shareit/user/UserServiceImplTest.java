@@ -217,6 +217,7 @@ class UserServiceImplTest extends BaseUtility {
     @DisplayName("Удаление существующего пользователя")
     @Test
     void deleteUser_whenUserExists() {
+        when(userStorage.findById(anyInt())).thenReturn(Optional.of(user));
         doNothing().when(userStorage).deleteById(1);
 
         userService.deleteUser(1);
@@ -228,10 +229,7 @@ class UserServiceImplTest extends BaseUtility {
     @Test
     void deleteUser_whenUserDoesNotExist() {
 
-        doNothing().when(userStorage).deleteById(666);
-
-        assertDoesNotThrow(() -> userService.deleteUser(666));
-        verify(userStorage, times(1)).deleteById(666);
+        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser(666));
     }
 
     private User getUser(int id, String name, String email) {

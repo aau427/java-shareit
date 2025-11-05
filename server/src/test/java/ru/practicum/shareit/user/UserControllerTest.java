@@ -217,12 +217,12 @@ class UserControllerTest extends BaseControllerHelper {
                     .andExpect(status().is(200));
         }
 
-        @DisplayName("При удалении несуществующего пользователя возвращает 200")
+        @DisplayName("При удалении несуществующего пользователя выдает ошибку")
         @Test
         @SneakyThrows
         void shouldDeleteNotExistingUser() {
             mockMvc.perform(delete("/users/" + 666))
-                    .andExpect(status().is(200));
+                    .andExpect(status().is(404));
         }
     }
 }
