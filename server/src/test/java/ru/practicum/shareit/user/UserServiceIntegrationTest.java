@@ -1,26 +1,26 @@
 package ru.practicum.shareit.user;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
+import ru.practicum.shareit.BaseUtility;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.SimpleUserMapperImpl;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 import ru.practicum.shareit.user.storage.UserStorage;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @Import({UserServiceImpl.class, SimpleUserMapperImpl.class})
 @ActiveProfiles("test")
-public class UserServiceIntegrationTest {
+public class UserServiceIntegrationTest extends BaseUtility {
     @Autowired
     private UserServiceImpl userService;
 
@@ -36,12 +36,6 @@ public class UserServiceIntegrationTest {
         userDto.setEmail("somel@mail.ru");
     }
 
-    @AfterEach
-    void afterEach() {
-        userStorage.deleteAll();
-    }
-
-
     @DisplayName("Пользователь успешно создается")
     @Test
     void shouldCreateUser() {
@@ -51,6 +45,19 @@ public class UserServiceIntegrationTest {
         assertNotNull(createdUserDto.getId());
         assertEquals(userDto.getName(), createdUserDto.getName());
         assertEquals(userDto.getEmail(), createdUserDto.getEmail());
+    }
+
+    @DisplayName("Нельзя вставить 2-х пользователей с одинаковым e-mail")
+    @Test
+    void shouldNotCreateUserWithSameEmail() {
+        UserDto createUserDto = userService.createUser(userDto);
+
+        UserDto anotherUserDto = new UserDto();
+        anotherUserDto.setName("какой-то");
+        anotherUserDto.setEmail(createUserDto.getEmail());
+
+        assertThrows(DataIntegrityViolationException.class, () -> userService.createUser(anotherUserDto));
+
     }
 
     @DisplayName("Пользователь успешно возвращается по Id")

@@ -11,13 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import ru.practicum.shareit.BaseControllerHelper;
 import ru.practicum.shareit.booking.dto.InputBookingDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.BaseControllerHelper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.storage.UserStorage;
 

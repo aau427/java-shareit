@@ -12,10 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.BaseControllerHelper;
 import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.BaseControllerHelper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.storage.UserStorage;
 
@@ -108,6 +108,32 @@ class ItemControllerTest extends BaseControllerHelper {
                 .andExpect(status().is(400));
     }
 
+    @SneakyThrows
+    @DisplayName("Item не создается с незаполненным описанием")
+    @Test
+    void shouldItemNotCreateWithNullDescription() {
+        itemDto.setDescription(null);
+        mockMvc.perform(post("/items")
+                        .header(Common.USER_HEADER, 666)
+                        .content(objectMapper.writeValueAsString(itemDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(400));
+    }
+
+    @SneakyThrows
+    @DisplayName("Item не создается с незаполненным available")
+    @Test
+    void shouldItemNotCreateWithNullAvailable() {
+        itemDto.setAvailable(null);
+        mockMvc.perform(post("/items")
+                        .header(Common.USER_HEADER, createdOwnerId)
+                        .content(objectMapper.writeValueAsString(itemDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is(400));
+    }
+
     @Nested
     @DisplayName("Обновление, поиск, удаление вещи")
     class CrudItemClassTest {
@@ -155,6 +181,24 @@ class ItemControllerTest extends BaseControllerHelper {
                     .andExpect(jsonPath("$.owner").value(itemDto.getOwner()));
         }
 
+        @DisplayName("Item обновляется (только имя)")
+        @Test
+        @SneakyThrows
+        void shouldUpdateItemPartially() {
+            itemDto.setName("Новое имя");
+
+            mockMvc.perform(patch("/items/" + createdItemId)
+                            .header(Common.USER_HEADER, createdOwnerId)
+                            .content(objectMapper.writeValueAsString(itemDto))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(createdItemId))
+                    .andExpect(jsonPath("$.name").value("Новое имя"))
+                    .andExpect(jsonPath("$.description").value(itemDto.getDescription()))
+                    .andExpect(jsonPath("$.available").value(itemDto.getAvailable()));
+        }
+
         @DisplayName("Item не обновляется, если не существует")
         @Test
         @SneakyThrows
@@ -168,6 +212,31 @@ class ItemControllerTest extends BaseControllerHelper {
                             .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().is(404));
+        }
+
+        @DisplayName("Item может обновить только владелец")
+        @Test
+        @SneakyThrows
+        void shouldNotUpdateItemIfWrongOwner() {
+
+            itemDto.setDescription("Попытка обновления");
+
+            UserDto anotherUser = createSecondUserDto();
+            String result = mockMvc.perform(post("/users")
+                            .content(objectMapper.writeValueAsString(anotherUser))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+            int anotherUserId = JsonPath.read(result, "$.id");
+
+            mockMvc.perform(patch("/items/" + createdItemId)
+                            .header(Common.USER_HEADER, anotherUserId)
+                            .content(objectMapper.writeValueAsString(itemDto))
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().is(403));
         }
 
         @DisplayName("Item возвращается по Id")
@@ -196,6 +265,14 @@ class ItemControllerTest extends BaseControllerHelper {
                             .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().is(404));
+        }
+
+        @DisplayName("Item не возвращается непонятным пользователем")
+        @Test
+        @SneakyThrows
+        void shouldItemNotGetByIdIfUnauthorized() {
+            mockMvc.perform(get("/items/" + createdItemId))
+                    .andExpect(status().is(400));
         }
 
         @DisplayName("Возвращает вещи пользователя")
@@ -230,6 +307,17 @@ class ItemControllerTest extends BaseControllerHelper {
                     .andExpect(jsonPath("$[0].id").value(createdItemId))
                     .andExpect(jsonPath("$[0].name").value(itemDto.getName()))
                     .andExpect(jsonPath("$[0].available").value(itemDto.getAvailable()));
+        }
+
+        @DisplayName("Поиск вещей с пустым текстом возвращает пустой список")
+        @Test
+        @SneakyThrows
+        void shouldSearchItemsByEmptyText() {
+            mockMvc.perform(get("/items/search")
+                            .header(Common.USER_HEADER, createdOwnerId)
+                            .param("text", ""))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(0)));
         }
     }
 }
