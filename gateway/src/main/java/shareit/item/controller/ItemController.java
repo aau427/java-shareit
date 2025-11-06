@@ -50,8 +50,6 @@ public class ItemController {
     public ResponseEntity<Object> addComment(@RequestBody @Valid CommentDto commentDto,
                                              @PathVariable Integer itemId,
                                              @RequestHeader(value = Common.USER_HEADER) Integer authorId) {
-        commentDto.setCreated(Common.getLocalDateTime());
-
         return itemClient.addCommentToItem(authorId, itemId, commentDto);
     }
 }

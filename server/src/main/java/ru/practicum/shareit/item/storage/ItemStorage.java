@@ -18,7 +18,7 @@ public interface ItemStorage extends JpaRepository<Item, Integer> {
 
     List<Item> findAllByOwner(User userById);
 
-    @Query(value = "SELECT B.item FROM Booking B WHERE B.item.id = ?1 AND B.status = BookingStatus.APPROVED AND B.booker.id = ?2 and B.end < ?3")
+    @Query(value = "SELECT B.item FROM Booking B WHERE B.item.id = ?1 AND B.status = 'APPROVED' AND B.booker.id = ?2 and B.end < ?3")
     List<Item> getItemsWasCompleteBookingByUser(Integer itemId, Integer userId, LocalDateTime created);
 
     List<Item> findAllByRequestInOrderById(List<ItemRequest> itemRequestList);
