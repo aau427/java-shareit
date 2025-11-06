@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.service.CommentService;
-import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOutDtoWithDates;
 import ru.practicum.shareit.item.service.ItemService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.practicum.shareit.common.Common.USER_HEADER;
@@ -60,7 +60,7 @@ public class ItemController {
         commentDto.setItemId(itemId);
         commentDto.setAuthorId(authorId);
         if (commentDto.getCreated() == null) {
-            commentDto.setCreated(Common.getLocalDateTime());
+            commentDto.setCreated(LocalDateTime.now());
         }
         return commentService.addComment(commentDto);
     }

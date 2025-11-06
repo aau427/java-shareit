@@ -3,7 +3,6 @@ package ru.practicum.shareit.request.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.item.dto.ItemShortOutDto;
 import ru.practicum.shareit.item.mapper.SimpleItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -35,7 +34,7 @@ public abstract class SimpleItemRequestMapper {
     public abstract ItemRequestDtoWithItems itemToItemRequestWithItems(ItemRequest itemRequest, List<Item> itemList);
 
     protected LocalDateTime getCurrentDateTime() {
-        return Common.getLocalDateTime();
+        return LocalDateTime.now();
     }
 
     protected List<ItemShortOutDto> getItemsDtoList(List<Item> itemList) {

@@ -10,7 +10,6 @@ import ru.practicum.shareit.booking.model.LastAndNextBookings;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.storage.CommentStorage;
-import ru.practicum.shareit.common.Common;
 import ru.practicum.shareit.exceptions.CustomValidationException;
 import ru.practicum.shareit.exceptions.ResourceNotFoundException;
 import ru.practicum.shareit.exceptions.RightsException;
@@ -141,7 +140,7 @@ public class ItemServiceImpl implements ItemService {
          А следующее, которое начнется в самом ближайшем будущем.
          */
         LastAndNextBookings twoBookings = new LastAndNextBookings();
-        LocalDateTime now = Common.getLocalDateTime();
+        LocalDateTime now = LocalDateTime.now();
         if (bookingList.isEmpty()) {
             twoBookings.setLastBooking(null);
             twoBookings.setNextBooking(null);
