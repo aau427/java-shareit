@@ -11,6 +11,6 @@ public class Common {
     public static final BookingStatus DEFAULT_BOOKING_STATUS = BookingStatus.WAITING;
 
     public static LocalDateTime getLocalDateTime() {
-        return LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Europe/Moscow"));
+        return LocalDateTime.now();
     }
 }
