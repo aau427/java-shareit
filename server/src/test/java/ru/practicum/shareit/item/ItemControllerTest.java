@@ -108,45 +108,6 @@ class ItemControllerTest extends BaseControllerHelper {
                 .andExpect(status().is(404));
     }
 
-    @SneakyThrows
-    @DisplayName("Item не создается с незаполненным именем")
-    @Test
-    void shouldItemNotCreateWithNullName() {
-        itemDto.setName(null);
-        mockMvc.perform(post("/items")
-                        .header(Common.USER_HEADER, 666)
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-    }
-
-    @SneakyThrows
-    @DisplayName("Item не создается с незаполненным описанием")
-    @Test
-    void shouldItemNotCreateWithNullDescription() {
-        itemDto.setDescription(null);
-        mockMvc.perform(post("/items")
-                        .header(Common.USER_HEADER, 666)
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-    }
-
-    @SneakyThrows
-    @DisplayName("Item не создается с незаполненным available")
-    @Test
-    void shouldItemNotCreateWithNullAvailable() {
-        itemDto.setAvailable(null);
-        mockMvc.perform(post("/items")
-                        .header(Common.USER_HEADER, createdOwnerId)
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-    }
-
     @Nested
     @DisplayName("Обновление, поиск, удаление вещи")
     class CrudItemClassTest {

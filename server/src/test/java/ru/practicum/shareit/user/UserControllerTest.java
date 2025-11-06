@@ -91,30 +91,6 @@ class UserControllerTest extends BaseControllerHelper {
                 .andExpect(jsonPath("$.description").isString());
     }
 
-    @DisplayName("Пользователь не создается без имени")
-    @Test
-    @SneakyThrows
-    void shouldUserNotCreateWithoutName() {
-        ownerDto.setName(null);
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(ownerDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-    }
-
-    @DisplayName("Пользователь не создается c некорректным email")
-    @Test
-    @SneakyThrows
-    void shouldUserNotCreateWithIncorrectEmail() {
-        ownerDto.setEmail("email");
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(ownerDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().is(400));
-    }
-
     private UserDto createOwnerDto() {
         UserDto userDto = new UserDto();
         userDto.setName("Item Owner");
