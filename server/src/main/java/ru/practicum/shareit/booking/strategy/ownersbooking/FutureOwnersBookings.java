@@ -13,7 +13,7 @@ import java.util.List;
 public class FutureOwnersBookings extends BookingFindStrategy {
     @Override
     public List<Booking> findBooking(User user) {
-        return bookingStorage.getFutureBookingForOwner(user.getId(), LocalDateTime.now()));
+        return bookingStorage.getFutureBookingForOwner(user.getId(), LocalDateTime.now());
     }
 
     @Override
