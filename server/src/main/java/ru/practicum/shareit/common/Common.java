@@ -2,9 +2,7 @@ package ru.practicum.shareit.common;
 
 import ru.practicum.shareit.booking.model.BookingStatus;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public class Common {
     public static final String USER_HEADER = "X-Sharer-User-Id";
