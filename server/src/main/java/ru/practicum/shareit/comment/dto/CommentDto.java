@@ -1,7 +1,5 @@
 package ru.practicum.shareit.comment.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,8 +7,6 @@ import java.time.LocalDateTime;
 @Data
 public class CommentDto {
     private Integer id;
-    @Size(max = 50)
-    @NotEmpty(message = "комментарий не может быть пустым")
     private String text;
     private Integer itemId;
     private Integer authorId;

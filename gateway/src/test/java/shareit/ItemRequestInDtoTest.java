@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request;
+package shareit;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
-import ru.practicum.shareit.request.dto.ItemRequestInDto;
+import shareit.request.dto.ItemRequestInDto;
 
 import java.util.Set;
 
@@ -21,9 +21,10 @@ class ItemRequestInDtoTest {
 
     @BeforeEach
     void beforeEach() {
-        itemRequestDto = new ItemRequestInDto();
-        itemRequestDto.setUserId(11);
-        itemRequestDto.setDescription("Хочу самовар");
+        itemRequestDto = ItemRequestInDto.builder()
+                .userId(11)
+                .description("Хочу самовар")
+                .build();
     }
 
     @DisplayName("Валидация: корректный DTO не должен иметь нарушений")

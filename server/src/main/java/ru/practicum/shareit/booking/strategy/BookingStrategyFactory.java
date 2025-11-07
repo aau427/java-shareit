@@ -1,7 +1,7 @@
 package ru.practicum.shareit.booking.strategy;
 
-import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.exceptions.ValidationException;
 
 import java.util.List;
 

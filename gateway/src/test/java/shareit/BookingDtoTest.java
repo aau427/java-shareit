@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package shareit;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -6,34 +6,33 @@ import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.json.JsonTest;
-import ru.practicum.shareit.booking.dto.InputBookingDto;
+import shareit.booking.dto.BookingDto;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@JsonTest
 class BookingDtoTest {
 
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-    private InputBookingDto bookingDto;
+    private BookingDto bookingDto;
 
     @BeforeEach()
     void beforeEach() {
-        bookingDto = new InputBookingDto();
-        bookingDto.setItemId(1);
-        bookingDto.setBookerId(11);
-        bookingDto.setStart(LocalDateTime.now().plusDays(1));
-        bookingDto.setEnd(LocalDateTime.now().plusDays(2));
+        bookingDto = BookingDto.builder()
+                .itemId(1)
+                .bookerId(11)
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().plusDays(2))
+                .build();
     }
 
     @DisplayName("Валидация: корректный DTO не должен иметь нарушений")
     @Test
     void validation_WhenValidDto_ShouldHaveNoViolations() {
 
-        Set<ConstraintViolation<InputBookingDto>> violations = validator.validate(bookingDto);
+        Set<ConstraintViolation<BookingDto>> violations = validator.validate(bookingDto);
 
         assertTrue(violations.isEmpty());
     }
@@ -42,7 +41,7 @@ class BookingDtoTest {
     @Test
     void validation_WhenNullStart_ShouldHaveViolation() {
         bookingDto.setStart(null);
-        Set<ConstraintViolation<InputBookingDto>> violations = validator.validate(bookingDto);
+        Set<ConstraintViolation<BookingDto>> violations = validator.validate(bookingDto);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -53,7 +52,7 @@ class BookingDtoTest {
     @Test
     void validation_WhenNullEnd_ShouldHaveViolation() {
         bookingDto.setEnd(null);
-        Set<ConstraintViolation<InputBookingDto>> violations = validator.validate(bookingDto);
+        Set<ConstraintViolation<BookingDto>> violations = validator.validate(bookingDto);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
@@ -64,7 +63,7 @@ class BookingDtoTest {
     @Test
     void validation_WhenNullItemId_ShouldHaveViolation() {
         bookingDto.setItemId(null);
-        Set<ConstraintViolation<InputBookingDto>> violations = validator.validate(bookingDto);
+        Set<ConstraintViolation<BookingDto>> violations = validator.validate(bookingDto);
 
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());

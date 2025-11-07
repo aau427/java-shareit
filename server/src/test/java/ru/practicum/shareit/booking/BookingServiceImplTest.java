@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,7 @@ import ru.practicum.shareit.booking.strategy.FindBookingStateEnum;
 import ru.practicum.shareit.exceptions.LogicalException;
 import ru.practicum.shareit.exceptions.ResourceNotFoundException;
 import ru.practicum.shareit.exceptions.RightsException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.SimpleItemMapper;
 import ru.practicum.shareit.item.model.Item;

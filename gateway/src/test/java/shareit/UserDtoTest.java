@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package shareit;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.user.dto.UserDto;
+import shareit.user.dto.UserDto;
 
 import java.io.IOException;
 import java.util.Set;

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.exceptions;
 
 
-import jakarta.validation.ValidationException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

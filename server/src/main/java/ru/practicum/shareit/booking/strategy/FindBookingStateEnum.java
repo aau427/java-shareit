@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.strategy;
 
-import jakarta.validation.ValidationException;
+
+import ru.practicum.shareit.exceptions.ValidationException;
 
 public enum FindBookingStateEnum {
     ALL_USERS, CURRENT_USERS, PAST_USERS, FUTURE_USERS, WAITING_USERS, REJECTED_USERS,
