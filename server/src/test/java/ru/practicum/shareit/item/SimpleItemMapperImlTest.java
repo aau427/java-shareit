@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 public class SimpleItemMapperImlTest {
     @Autowired
-    UserStorage userStorage;
+    private UserStorage userStorage;
     @Autowired
-    ItemRequestService itemRequestService;
+    private ItemRequestService itemRequestService;
     @Autowired
     private SimpleItemMapperImpl itemMapper;
     private User owner;
@@ -98,6 +98,7 @@ public class SimpleItemMapperImlTest {
         expectedDto.setName(item.getName());
         expectedDto.setDescription(item.getDescription());
         expectedDto.setAvailable(item.getAvailable());
+        expectedDto.setOwnerId(item.getOwner().getId());
 
         ItemShortOutDto actualDto = itemMapper.toItemShortDto(item);
 

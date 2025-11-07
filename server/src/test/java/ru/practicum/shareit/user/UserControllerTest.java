@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest extends BaseControllerHelper {
 
     @Autowired
-    UserStorage userStorage;
+    private UserStorage userStorage;
     @Autowired
     private MockMvc mockMvc;
     @Autowired

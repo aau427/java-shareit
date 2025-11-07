@@ -7,6 +7,7 @@ public class ItemShortOutDto {
     private Integer id;
     private String name;
     private String description;
+    private Integer ownerId;
     private Boolean available;
     private Integer requestId;
 }

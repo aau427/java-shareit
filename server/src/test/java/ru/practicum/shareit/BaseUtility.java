@@ -70,6 +70,7 @@ public abstract class BaseUtility {
         dto.setDescription(item.getDescription());
         dto.setAvailable(item.getAvailable());
         dto.setRequestId(requester.getId());
+        dto.setOwnerId(item.getOwner().getId());
         return dto;
     }
 

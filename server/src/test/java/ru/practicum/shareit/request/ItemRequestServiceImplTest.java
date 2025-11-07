@@ -38,8 +38,7 @@ class ItemRequestServiceImplTest extends BaseUtility {
     @Mock
     private ItemStorage itemStorage;
     @Mock
-    private
-    SimpleItemRequestMapper itemRequestMapper;
+    private SimpleItemRequestMapper itemRequestMapper;
     @Mock
     private UserService userService;
 

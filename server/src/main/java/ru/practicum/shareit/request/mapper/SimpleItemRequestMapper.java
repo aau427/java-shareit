@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public abstract class SimpleItemRequestMapper {
     @Autowired
-    UserService userService;
+    protected UserService userService;
 
     @Autowired
-    SimpleItemMapper itemMapper;
+    protected SimpleItemMapper itemMapper;
 
     @Mapping(target = "requester", expression = "java(userService.getUserById(itemRequestInDto.getUserId()))")
     @Mapping(target = "created", expression = "java(getCurrentDateTime())")

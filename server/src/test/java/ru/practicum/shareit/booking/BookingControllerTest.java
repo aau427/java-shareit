@@ -34,11 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class BookingControllerTest extends BaseControllerHelper {
     @Autowired
-    UserStorage userStorage;
+    private UserStorage userStorage;
     @Autowired
-    ItemStorage itemStorage;
+    private ItemStorage itemStorage;
     @Autowired
-    BookingStorage bookingStorage;
+    private BookingStorage bookingStorage;
     @Autowired
     private MockMvc mockMvc;
     @Autowired

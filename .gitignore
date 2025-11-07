@@ -5,7 +5,6 @@ volumes/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-checkstyle.xml
 ### STS ###
 .apt_generated
 .classpath

@@ -10,6 +10,6 @@ import java.util.List;
 public interface ItemRequestStorage extends JpaRepository<ItemRequest, Integer> {
     List<ItemRequest> findAllByRequesterOrderByCreatedDesc(User user);
 
-    @Query(value = "SELECT IR FROM ItemRequest IR WHERE IR.requester.id <> ?1")
+    @Query(value = "SELECT IR FROM ItemRequest IR WHERE IR.requester.id <> ?1 ORDER BY IR.created DESC")
     List<ItemRequest> findAll(Integer userId);
 }
