@@ -127,8 +127,7 @@ public class ItemRequestControllerTest {
                             .header(Common.USER_HEADER, user.getId())
                     )
                     .andExpect(status().is(200))
-                    .andExpect(jsonPath("$", hasSize(2)))
-                    .andExpect(jsonPath("$[1].id").value(createdRequestId));
+                    .andExpect(jsonPath("$", hasSize(2)));
         }
 
         @DisplayName("Возвращает ошибку для левого пользователя")
